@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 from google.adk.agents import LlmAgent, SequentialAgent, ParallelAgent, LoopAgent
 from google.adk.models.lite_llm import LiteLlm
+from google.adk.tools.agent_tool import AgentTool
 
 from ..chief_marketing_agent.agent import agent as scoping_agent
 
@@ -117,11 +118,11 @@ def deploy_markdown(pipeline: Dict[str, Any], output_path: str = "deploy_output.
 def build_marketing_pipeline() -> SequentialAgent:
     # 1) CEO reads brief
     # 2) Copywriter-Legal loop until all_clear
-    copywriter_legal_sequence = SequentialAgent(
-        name="copywriter_legal_sequence",
-        description="Copywriter then Legal",
-        sub_agents=[copywriter_agent, legal_agent],
-    )
+    # copywriter_legal_sequence = SequentialAgent(
+    #     name="copywriter_legal_sequence",
+    #     description="Copywriter then Legal",
+    #     sub_agents=[copywriter_agent, legal_agent],
+    # )
 
     def terminate_on_all_clear(pipeline: Dict[str, Any]) -> bool:
         last_legal = pipeline.get("state", {}).get("legal_agent", {})
@@ -132,8 +133,7 @@ def build_marketing_pipeline() -> SequentialAgent:
     copywriter_legal_loop = LoopAgent(
         name="copywriter_legal_loop",
         description="Iterate copywriter and legal until all_clear",
-        agent=copywriter_legal_sequence,
-        should_terminate=terminate_on_all_clear,
+        sub_agents=[copywriter_agent, legal_agent],
         max_iterations=6,
     )
 
@@ -148,20 +148,27 @@ def build_marketing_pipeline() -> SequentialAgent:
     # 4) Aggregator
     # 5) Copywriter & Legal revise again (reuse loop)
     # 6) CEO final sign-off
-    pipeline = SequentialAgent(
+    pipeline = LlmAgent(
         name="marketing_agency_pipeline",
+        model=LiteLlm(model="claude-3-7-sonnet-20250219"),
         description="End-to-end marketing agency pipeline",
-        sub_agents=[
-            scoping_agent,
-            ceo_agent,
-            copywriter_legal_loop,
-            market_research_agent,
-            kol_parallel,
-            aggregator_agent,
-            copywriter_legal_loop,
-            ceo_agent,
-        ],
+        tools=[AgentTool(scoping_agent), AgentTool(aggregator_agent), AgentTool(kol_parallel), AgentTool(market_research_agent)]
+
     )
+    # pipeline = SequentialAgent(
+    #     name="marketing_agency_pipeline",
+    #     description="End-to-end marketing agency pipeline",
+    #     sub_agents=[
+    #         scoping_agent,
+    #         ceo_agent,
+    #         copywriter_legal_loop,
+    #         market_research_agent,
+    #         kol_parallel,
+    #         aggregator_agent,
+    #         copywriter_legal_loop,
+    #         ceo_agent,
+    #     ],
+    # )
 
     return pipeline
 
