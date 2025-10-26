@@ -66,6 +66,42 @@
   }
   function setSubtitle(text) { const el = qs('#panel-subtitle'); if (el) el.textContent = text; }
   function setProgress(percent) { const bar = qs('#progressBar'); if (bar) bar.style.width = `${percent}%`; }
+  async function startRun(formData) {
+    appendLog('Sending RFP to server…', 'ok');
+    setSubtitle('Submitting');
+    setProgress(5);
+    try {
+      const res = await fetch('/api/rfp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyUrl: formData.companyUrl,
+          drugName: formData.drugName,
+          trialsPapers: formData.trialsPapers,
+          doctorTypes: formData.doctorTypes,
+        })
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      setSubtitle('Agents running');
+      setProgress(25);
+      const data = await res.json();
+      appendLog('Pipeline completed.', 'ok');
+      setProgress(90);
+      if (data.deploy_path) {
+        appendLog(`Deployed artifact at: ${data.deploy_path}`, 'ok');
+      }
+      setProgress(100);
+      setSubtitle('Complete');
+      const doneBtn = qs('#panelDone'); if (doneBtn) doneBtn.hidden = false;
+    } catch (err) {
+      console.error(err);
+      appendLog(`Error: ${err.message || err}`, 'err');
+      setSubtitle('Error');
+      setProgress(100);
+      const doneBtn = qs('#panelDone'); if (doneBtn) doneBtn.hidden = false;
+    }
+  }
+
   function startSimulation(formData) {
     const steps = [
       { text: `Crawling ${formData.companyUrl} for product and pipeline pages…`, delay: 900 },
@@ -98,7 +134,11 @@
         doctorTypes: form.querySelector('#doctorTypes').value.trim()
       };
       openPanel();
-      startSimulation(formData);
+      // Prefer server mode if API available, else fallback to simulation
+      const apiBase = '';
+      fetch(apiBase + '/api/health', { method: 'GET' })
+        .then(() => startRun(formData))
+        .catch(() => startSimulation(formData));
     });
     const closeBtn = qs('#panelClose'); const doneBtn = qs('#panelDone'); const backdrop = qs('#panelBackdrop');
     if (closeBtn) closeBtn.addEventListener('click', closePanel);

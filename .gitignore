@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Build outputs
+dist
+web/dist
+*.egg-info
+build
+
+# Environment & secrets
+.env
+.env.local
+*.key
+*.pem
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & temp
+*.log
+deploy_output.md
+*.tmp
+
+# Package locks (optional - some teams commit these)
+# package-lock.json
