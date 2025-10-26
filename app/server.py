@@ -17,9 +17,9 @@ from agents.marketing_agency import build_marketing_pipeline, deploy_markdown
 class RfpRequest(BaseModel):
     companyUrl: HttpUrl
     drugName: str
-    trialsPapers: str | None = None
-    doctorTypes: str | None = None
-    brief: str | None = None
+    trialsPapers: str 
+    doctorTypes: str
+    brief: str
 
 
 app = FastAPI(title="Sundai API")

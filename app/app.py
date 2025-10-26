@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -7,6 +8,8 @@ from typing import Any, Dict
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.marketing_agency import build_marketing_pipeline
+
+logger = logging.getLogger(__name__)
 
 
 def run_pipeline(brief: str) -> Dict[str, Any]:
@@ -30,6 +33,13 @@ def run_pipeline(brief: str) -> Dict[str, Any]:
             "defaults": defaults,
         }
     })
+
+    print("Pipeline run completed.")
+    print("Result:")
+    print(json.dumps(result, indent=2))
+    logger.info("=== Pipeline Completed ===")
+    logger.info(json.dumps(result, indent=2))
+
 
     print("\n=== Pipeline Completed ===")
     print(json.dumps(result, indent=2))

@@ -103,10 +103,22 @@ def randomize_ab_assignment(pipeline: Dict[str, Any], kol_names: List[str]) -> D
 def deploy_markdown(pipeline: Dict[str, Any], output_path: str = "deploy_output.md") -> str:
     brief = pipeline.get("inputs", {}).get("brief", "")
     rec = pipeline.get("state", {}).get("aggregator", {}).get("recommendation", "")
+    campaign_brief = pipeline.get("state", {}).get("copywriter_agent", {}).get("output", {}).get("campaign_brief", {})
+    
     with open(output_path, "w") as f:
         f.write(f"# Campaign Deployment\n\n")
         f.write(f"## Recommendation: {rec}\n\n")
-        f.write(f"## Brief\n\n{brief}\n")
+        f.write(f"## Marketing Brief\n\n")
+        f.write(f"{brief}\n\n")
+        f.write(f"## Campaign Variants\n\n")
+        if campaign_brief:
+            f.write(f"### Variant A\n\n")
+            f.write(f"{campaign_brief.get('A', '')}\n\n")
+            f.write(f"### Variant B\n\n")
+            f.write(f"{campaign_brief.get('B', '')}\n")
+        else:
+            f.write("No campaign variants available.\n")
+    
     print(f"Deployed to {output_path}")
     return output_path
 
@@ -114,7 +126,6 @@ def deploy_markdown(pipeline: Dict[str, Any], output_path: str = "deploy_output.
 # -----------------------------
 # Pipeline composition
 # -----------------------------
-
 def build_marketing_pipeline() -> SequentialAgent:
     # 1) CEO reads brief
     # 2) Copywriter-Legal loop until all_clear
@@ -151,24 +162,21 @@ def build_marketing_pipeline() -> SequentialAgent:
     pipeline = LlmAgent(
         name="marketing_agency_pipeline",
         model=LiteLlm(model="claude-3-7-sonnet-20250219"),
+        instruction=(
+            "Oversee the end-to-end marketing campaign creation process.\n"
+            "At the end, output the marketing brief in markdown format with sections for:\n"
+            "- Recommendation\n"
+            "- Marketing Brief\n"
+            "- Campaign Variants (A and B)"
+        ),
         description="End-to-end marketing agency pipeline",
-        tools=[AgentTool(scoping_agent), AgentTool(aggregator_agent), AgentTool(kol_parallel), AgentTool(market_research_agent)]
-
+        tools=[AgentTool(scoping_agent), 
+               AgentTool(aggregator_agent), 
+               AgentTool(kol_parallel), 
+               AgentTool(market_research_agent),
+               AgentTool(copywriter_agent),
+               AgentTool(legal_agent)]
     )
-    # pipeline = SequentialAgent(
-    #     name="marketing_agency_pipeline",
-    #     description="End-to-end marketing agency pipeline",
-    #     sub_agents=[
-    #         scoping_agent,
-    #         ceo_agent,
-    #         copywriter_legal_loop,
-    #         market_research_agent,
-    #         kol_parallel,
-    #         aggregator_agent,
-    #         copywriter_legal_loop,
-    #         ceo_agent,
-    #     ],
-    # )
 
     return pipeline
 

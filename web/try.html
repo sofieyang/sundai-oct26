@@ -84,6 +84,24 @@
 
     <!-- Backdrop for small screens -->
     <div id="panelBackdrop" class="panel-backdrop" hidden></div>
+
+    <!-- Marketing Brief Modal -->
+    <div id="briefModal" class="brief-modal" hidden>
+      <div class="brief-modal-content">
+        <div class="brief-modal-header">
+          <h2>Marketing Brief</h2>
+          <button class="icon-btn" id="briefModalClose" aria-label="Close modal">✕</button>
+        </div>
+        <div class="brief-modal-body" id="briefContent">
+          <!-- Markdown content will be inserted here -->
+        </div>
+        <div class="brief-modal-footer">
+          <button class="btn primary" id="downloadBrief">Download as Markdown</button>
+          <button class="btn ghost" id="closeBrief">Close</button>
+        </div>
+      </div>
+    </div>
+    <div id="briefBackdrop" class="brief-backdrop" hidden></div>
   </body>
   </html>
 
