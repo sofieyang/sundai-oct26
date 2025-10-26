@@ -120,10 +120,129 @@ body {
 .logs .dot.danger { background: var(--danger); }
 .logs .time { color: var(--muted); font-size: 12px; }
 
+/* Marketing Brief Modal */
+.brief-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brief-backdrop[hidden] {
+  display: none;
+}
+
+.brief-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: auto;
+}
+
+.brief-modal[hidden] {
+  display: none;
+}
+
+.brief-modal-content {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.brief-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brief-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brief-modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+}
+
+.markdown-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0;
+  max-height: none;
+}
+
+.brief-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* Responsive */
 @media (max-width: 860px) {
   .grid-3 { grid-template-columns: 1fr; }
   .banner-inner { grid-template-columns: 1fr; }
+
+  .brief-modal {
+    padding: 0;
+  }
+
+  .brief-modal-content {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .brief-modal-footer {
+    flex-direction: column;
+  }
+
+  .brief-modal-footer .btn {
+    width: 100%;
+  }
 }
 
 

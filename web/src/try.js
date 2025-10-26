@@ -66,6 +66,51 @@
   }
   function setSubtitle(text) { const el = qs('#panel-subtitle'); if (el) el.textContent = text; }
   function setProgress(percent) { const bar = qs('#progressBar'); if (bar) bar.style.width = `${percent}%`; }
+
+  function showBriefModal(markdownContent) {
+    const modal = qs('#briefModal');
+    const backdrop = qs('#briefBackdrop');
+    const content = qs('#briefContent');
+    if (!modal || !content) return;
+
+    // Convert markdown to HTML or display as formatted text
+    // For now, we'll use a pre-formatted display with basic markdown rendering
+    content.innerHTML = `<pre class="markdown-content">${escapeHtml(markdownContent)}</pre>`;
+
+    modal.hidden = false;
+    if (backdrop) backdrop.hidden = false;
+
+    // Store markdown for download
+    modal.dataset.markdown = markdownContent;
+  }
+
+  function closeBriefModal() {
+    const modal = qs('#briefModal');
+    const backdrop = qs('#briefBackdrop');
+    if (modal) modal.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+  }
+
+  function downloadMarkdown() {
+    const modal = qs('#briefModal');
+    if (!modal || !modal.dataset.markdown) return;
+
+    const blob = new Blob([modal.dataset.markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `marketing-brief-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
   async function startRun(formData) {
     appendLog('Sending RFP to server…', 'ok');
     setSubtitle('Submitting');
@@ -92,6 +137,15 @@
       }
       setProgress(100);
       setSubtitle('Complete');
+
+      // Extract and display the marketing brief
+      if (data.result && data.result.scope_report) {
+        appendLog('Marketing brief ready. Opening preview…', 'ok');
+        showBriefModal(data.result.scope_report);
+      } else {
+        appendLog('Warning: No marketing brief found in response', 'warn');
+      }
+
       const doneBtn = qs('#panelDone'); if (doneBtn) doneBtn.hidden = false;
     } catch (err) {
       console.error(err);
@@ -144,6 +198,17 @@
     if (closeBtn) closeBtn.addEventListener('click', closePanel);
     if (doneBtn) doneBtn.addEventListener('click', closePanel);
     if (backdrop) backdrop.addEventListener('click', closePanel);
+
+    // Brief modal event listeners
+    const briefModalClose = qs('#briefModalClose');
+    const closeBriefBtn = qs('#closeBrief');
+    const downloadBriefBtn = qs('#downloadBrief');
+    const briefBackdrop = qs('#briefBackdrop');
+
+    if (briefModalClose) briefModalClose.addEventListener('click', closeBriefModal);
+    if (closeBriefBtn) closeBriefBtn.addEventListener('click', closeBriefModal);
+    if (downloadBriefBtn) downloadBriefBtn.addEventListener('click', downloadMarkdown);
+    if (briefBackdrop) briefBackdrop.addEventListener('click', closeBriefModal);
   }
 
   document.addEventListener('DOMContentLoaded', onTryPage);
