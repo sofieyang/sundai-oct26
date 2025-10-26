@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Request a Proposal — Sundai</title>
+    <meta name="description" content="Kick off a fully‑autonomous proposal from Sundai.">
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body class="try">
+    <header class="site-header">
+      <div class="container">
+        <a href="./index.html" class="brand">
+          <span class="logo" aria-hidden="true">◆</span>
+          <span class="brand-name">Sundai</span>
+        </a>
+        <nav class="nav">
+          <a href="./index.html#what">What we do</a>
+          <a href="./index.html#how">How it works</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="form-section">
+        <div class="container narrow">
+          <h1>Send request for proposal</h1>
+          <p class="muted">Enter a few details and we'll spin up our agents. This demo runs entirely in your browser.</p>
+
+          <form id="proposal-form" novalidate>
+            <div class="field">
+              <label for="companyUrl">Company URL <span class="req">required</span></label>
+              <input id="companyUrl" name="companyUrl" type="url" placeholder="https://your-company.com" required inputmode="url" autocomplete="url" />
+              <small class="error" data-for="companyUrl"></small>
+            </div>
+
+            <div class="field">
+              <label for="drugName">Drug / Product name <span class="req">required</span></label>
+              <input id="drugName" name="drugName" type="text" placeholder="e.g., ZY-101 (oncology)" required />
+              <small class="error" data-for="drugName"></small>
+            </div>
+
+            <div class="field">
+              <label for="trialsPapers">Clinical trials and papers <span class="optional">optional</span></label>
+              <textarea id="trialsPapers" name="trialsPapers" rows="4" placeholder="Paste links or identifiers (NCT numbers, DOIs)"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="doctorTypes">Target doctor types <span class="optional">optional</span></label>
+              <input id="doctorTypes" name="doctorTypes" type="text" placeholder="e.g., Oncologists, endocrinologists" />
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn primary">Send request for proposal</button>
+              <a class="btn ghost" href="./index.html">Back to home</a>
+            </div>
+
+            <p class="disclaimer muted">This prototype does not send data to a server. No information leaves your browser.</p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right-side activity panel (hidden by default) -->
+    <aside id="activityPanel" class="activity-panel" aria-hidden="true">
+      <div class="panel-header">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="titles">
+          <strong>Working on your proposal</strong>
+          <small class="muted" id="panel-subtitle">Initializing agents...</small>
+        </div>
+        <button class="icon-btn" id="panelClose" aria-label="Close panel">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="progress">
+          <div class="bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <ul class="logs" id="activityLogs"></ul>
+      </div>
+      <div class="panel-footer">
+        <button class="btn white" id="panelDone" hidden>Close</button>
+      </div>
+    </aside>
+
+    <!-- Backdrop for small screens -->
+    <div id="panelBackdrop" class="panel-backdrop" hidden></div>
+  </body>
+  </html>
+
+
