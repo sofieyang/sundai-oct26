@@ -24,10 +24,15 @@ class RfpRequest(BaseModel):
 
 app = FastAPI(title="Sundai API")
 
+vercel_url = os.getenv("VERCEL_URL")  # e.g. my-app.vercel.app
+allowed_origin = f"https://{vercel_url}" if vercel_url else None
+
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+if allowed_origin:
+    origins.append(allowed_origin)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,10 +66,12 @@ def submit_rfp(payload: RfpRequest) -> Dict[str, Any]:
             "pipeline": {"defaults": defaults},
         })
         print("[API] Pipeline completed. Preparing deployment artifact…")
+        # Write to a temp file location in serverless environments
+        temp_output = os.path.join(os.getenv("TMPDIR", "/tmp"), "deploy_output.md")
         out_path = deploy_markdown({
             "inputs": inputs,
             "state": result if isinstance(result, dict) else {},
-        }, output_path=os.path.abspath("deploy_output.md"))
+        }, output_path=temp_output)
         return {"ok": True, "result": result, "deploy_path": out_path}
     except Exception as e:
         print(f"[API] Error: {e}")
