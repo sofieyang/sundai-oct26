@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/kaitl/Documents/PersonalProjects/sundai-oct26/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
